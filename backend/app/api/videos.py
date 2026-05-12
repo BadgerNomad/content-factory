@@ -14,7 +14,7 @@ from app.schemas.video import (
     YouTubeSearchRequest,
     YouTubeVideoResult,
 )
-from app.services import video_service, youtube_service
+from app.services import transcript_service, video_service, youtube_service
 
 router = APIRouter(prefix="/api/v1/videos", tags=["videos"])
 
@@ -53,4 +53,14 @@ async def get_video(
     current_user: User = Depends(get_current_user),
 ) -> VideoResponse:
     video = await video_service.get_video(session, current_user.id, video_id)
+    return VideoResponse.model_validate(video)
+
+
+@router.post("/{video_id}/transcript", response_model=VideoResponse)
+async def fetch_transcript(
+    video_id: UUID,
+    session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+) -> VideoResponse:
+    video = await transcript_service.process_transcript(session, video_id, current_user.id)
     return VideoResponse.model_validate(video)
