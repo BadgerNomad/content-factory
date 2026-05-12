@@ -1,8 +1,12 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_ROOT = Path(__file__).parent.parent.parent.parent
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_file=str(_ROOT / ".env"), env_file_encoding="utf-8")
 
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/content_factory"
     SECRET_KEY: str  # must be set via .env
